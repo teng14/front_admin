@@ -21,10 +21,10 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
+    redirect: '/home/index',
+    name: '首页',
     hidden: true,
-    children: [{ path: 'dashboard', component: _import('dashboard/index') }]
+    children: [{ path: 'home', component: _import('home/index') }]
   }
 ]
 
@@ -35,25 +35,35 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-  {
-    path: '/example',
-    component: Layout,
-    redirect: 'noredirect',
-    name: 'Example',
-    icon: 'zujian',
-    children: [
-      { path: 'index', name: 'Form', icon: 'zonghe', component: _import('page/form') }
-    ]
-  },
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   name: 'Example',
+  //   icon: 'zujian',
+  //   children: [
+  //     { path: 'index', name: 'Form', icon: 'zonghe', component: _import('page/form') }
+  //   ]
+  // },
 
   {
-    path: '/table',
+    path: '/home',
     component: Layout,
-    redirect: '/table/index',
     icon: 'tubiao',
     noDropdown: true,
-    children: [{ path: 'index', name: 'Table', component: _import('table/index'), meta: { role: ['admin'] }}]
+    children: [{ path: 'index', name: '首页', component: _import('home/index'), meta: { role: ['admin'] }}]
   },
+  {
+    path: '/customer',
+    component: Layout,
+    redirect: '/customer/index',
+    noDropdown: true,
+    name: '终端列表',
+    children: [
+      { path: 'index', component: _import('page/customer/index') },
+      { path: 'detail', name: '终端详情', component: _import('page/customer/detail') }
 
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]

@@ -6,7 +6,7 @@
     </div>
     <div class="main-container">
       <navbar></navbar>
-      <app-main></app-main>
+      <app-main class="main-container-bd"></app-main>
     </div>
   </div>
 </template>
@@ -75,9 +75,13 @@ export default {
             overflow-y: scroll;
         }
         .main-container {
+            margin-top: 40px;
             min-height: 100%;
             transition: all .28s ease-out;
             margin-left: 180px;
+        }
+        .main-container-bd{
+          padding: 10px;
         }
     }
 </style>
