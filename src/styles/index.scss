@@ -5,6 +5,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  background: #f0f3f7;
 }
 
 html {
@@ -68,4 +69,9 @@ a:hover {
   fill: currentColor;
   overflow: hidden;
 }
-
+.link{
+  color: #475669;
+  &:hover{
+    color: #20a0ff;
+  }
+}
