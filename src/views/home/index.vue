@@ -7,7 +7,7 @@
 
 <script>
   import Searchbar from '@/components/main/Searchbar'
-  import Plan from '@/components/index/Plan'
+  import Plan from '@/views/page/customer/Plan'
   export default {
     components: {
       Searchbar,

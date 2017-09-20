@@ -40,20 +40,23 @@
           label="操作"
           align="center">
           <template scope="scope">
-            <el-button @click="edit(this)" type="text">新增记录</el-button> &nbsp;&nbsp;
+            <el-button @click="edit(scope.row.organizationId)" type="text">新增记录</el-button> &nbsp;&nbsp;
             <router-link to="/customer/detail" class="router-link-active">查看详情</router-link>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
   </div>
 </template>
 
 <script>
   import Searchbar from '@/components/main/Searchbar'
+  import Addrecord from '@/components/Keqing/Addrecord'
   export default {
     data(){
       return {
+        organizationId: '',
         listData:[
           {
             id: 3243,
@@ -65,8 +68,15 @@
         ]
       }
     },
+    methods: {
+      edit: function(organizationId){
+        this.organizationId = organizationId
+        this.$refs.showDialog.show()
+      }
+    },
     components: {
-      Searchbar
+      Searchbar,
+      Addrecord
     }
   }
 </script>
