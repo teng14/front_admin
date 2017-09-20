@@ -14,3 +14,11 @@ export function markCustomerContact(id) {
     method: 'post'
   })
 }
+
+export function addRecord(params) {
+  return fetch({
+    url: '/api/customerContact/',
+    method: 'post',
+    params
+  })
+}

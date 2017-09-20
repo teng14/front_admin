@@ -56,21 +56,27 @@
       </el-pagination>
       </div>
     </div>
+    <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
   </div>
 </template>
 
 <script>
-  import { planData, markCustomerContact } from '@/api/plan'
+  import { planData, markCustomerContact } from '@/api/record'
+  import Addrecord from '@/components/Keqing/Addrecord'
   export default {
     data(){
       return {
-        planData: [],
+        planData: [], 
         listLoading: true,
-        currentPage: 4
+        organizationId: '',
+        currentPage: 4,
       }
     },
     created() {
       this.getDate();
+    },
+    components: {
+      Addrecord
     },
     methods: {
       getDate: function(){
@@ -103,7 +109,8 @@
         console.log(`当前页: ${val}`);
       },
       edit: function(index, data){
-        alert(1)
+        this.organizationId = data.organizationId
+        this.$refs.showDialog.show()
       }
     }
   }
