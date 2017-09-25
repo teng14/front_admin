@@ -61,8 +61,9 @@ export const asyncRouterMap = [
     name: '终端列表',
     children: [
       { path: 'index', component: _import('page/customer/index') },
-      { path: 'detail', name: '终端详情', component: _import('page/customer/detail') }
-
+      { path: 'detail', name: '终端详情', component: _import('page/customer/detail') },
+      { path: 'keqingList', name: '客情历史记录', component: _import('page/customer/keqingList') },
+      { path: 'cartGoods', name: '购物车商品', component: _import('page/customer/cartGoods') }
     ]
   },
   { path: '*', redirect: '/404', hidden: true }

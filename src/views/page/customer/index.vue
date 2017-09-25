@@ -11,36 +11,40 @@
         <el-table-column
           prop="id"
           label="终端ID" 
+          width="120px"
           align="center">
         </el-table-column>
         <el-table-column
           label="终端名称"
-          width="280"
           align="center">
           <template scope="scope">
-            <router-link to="/customer/detail" class="link">{{scope.row.name}}</router-link>
+            <router-link to="{name:'detail',params:{organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="link">{{scope.row.name}}</router-link>
           </template>
         </el-table-column>
         <el-table-column
           prop="status"
           label="账户状态"
+          width="120px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="contacts"
           label="联系人"
+          width="120px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="phone"
           label="电话"
+          width="200px"
           align="center">
         </el-table-column>
         <el-table-column
           label="操作"
+          width="200px"
           align="center">
           <template scope="scope">
-            <el-button @click="edit(scope.row.organizationId)" type="text">新增记录</el-button> &nbsp;&nbsp;
+            <el-button @click="addKeqing(scope.row.organizationId)" type="text">新增记录</el-button> &nbsp;&nbsp;
             <router-link to="/customer/detail" class="router-link-active">查看详情</router-link>
           </template>
         </el-table-column>
@@ -69,7 +73,7 @@
       }
     },
     methods: {
-      edit: function(organizationId){
+      addKeqing: function(organizationId){
         this.organizationId = organizationId
         this.$refs.showDialog.show()
       }

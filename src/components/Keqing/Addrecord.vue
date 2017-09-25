@@ -92,7 +92,6 @@
     },
     created: function(){
       
-      // console.log(this.showDialog)
     },
     mounted: function(){
       // console.log(this.$refs)

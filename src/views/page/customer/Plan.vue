@@ -13,7 +13,7 @@
           width="280"
           align="center">
           <template scope="scope">
-            <router-link to="/customer" class="link">{{scope.row.organizationName}}</router-link>
+            <router-link :to="{path:'/customer/detail',query:{organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="link">{{scope.row.organizationName}}</router-link>
           </template>
         </el-table-column>
         <el-table-column
@@ -38,7 +38,7 @@
           width="120"
           align="center">
           <template scope="scope">
-            <span class="el-icon-my-yijianfankui" @click="edit(scope.$index, scope.row)" style="font-size:20px;margin-right: 10px; cursor: pointer;"></span>
+            <span class="el-icon-my-yijianfankui" @click="addKeqing(scope.$index, scope.row)" style="font-size:20px;margin-right: 10px; cursor: pointer;"></span>
             <span class="el-icon-check" @click="mark(scope.$index, scope.row)" style="font-size:15px; cursor: pointer;color:#7fbe2d"></span>
           </template>
         </el-table-column>
@@ -46,14 +46,14 @@
       </transition>
       <div class="page">
         <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange" 
-        :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="400">
-      </el-pagination>
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange" 
+          :current-page="currentPage"
+          :page-sizes="[100, 200, 300, 400]"
+          :page-size="100"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="400">
+        </el-pagination>
       </div>
     </div>
     <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
@@ -108,7 +108,7 @@
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
       },
-      edit: function(index, data){
+      addKeqing: function(index, data){
         this.organizationId = data.organizationId
         this.$refs.showDialog.show()
       }
