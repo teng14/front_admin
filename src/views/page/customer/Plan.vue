@@ -1,6 +1,6 @@
 <template>
   <div class="plan-box" v-loading.body="listLoading">
-    <div class="title">今日拜访记录（24）</div>
+    <div class="title">今日拜访记录（{{totalElements}}）</div>
     <div class="plan-content">
       <transition name="el-zoom-in-top">
       <el-table
@@ -10,7 +10,7 @@
       empty-text="暂无内容">
         <el-table-column
           label="终端名称"
-          width="280"
+          width="340"
           align="center">
           <template scope="scope">
             <router-link :to="{path:'/customer/detail',query:{organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="link">{{scope.row.organizationName}}</router-link>
@@ -46,13 +46,11 @@
       </transition>
       <div class="page">
         <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange" 
-          :current-page="currentPage"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          @current-change="handleCurrentChange"
+          :current-page.sync="page"
+          :page-size="pageSize"
+          layout="prev, pager, next, jumper"
+          :total="totalElements">
         </el-pagination>
       </div>
     </div>
@@ -66,14 +64,15 @@
   export default {
     data(){
       return {
+        pageSize: 10,
+        page: 1,
+        totalPages: 0,
+        totalElements: 0,
         planData: [], 
         listLoading: true,
         organizationId: '',
         currentPage: 4,
       }
-    },
-    created() {
-      this.getDate();
     },
     components: {
       Addrecord
@@ -82,11 +81,13 @@
       getDate: function(){
         this.listLoading = true;
         planData({
-            page: 1,
-            pageSize: 10
+            page: this.page,
+            pageSize: this.pageSize
         }).then( response => {
-          this.planData = response.data
+          this.planData = response.data.customerContactList
+          this.totalElements = response.data.pageInfo.totalElements
           this.listLoading = false
+          console.log(this.planData)
         },
         error => {
           this.listLoading = false;
@@ -96,22 +97,23 @@
       mark: function(index){
         markCustomerContact(this.planData[index].id).then( response => {
           this.planData.splice(index,1);
+          this.totalElements = this.totalElements - 1
           this.$message({
             message: '操作成功',
             type: 'success'
           });
         })
       },
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+      handleCurrentChange: function(){
+        this.getDate();
       },
       addKeqing: function(index, data){
         this.organizationId = data.organizationId
         this.$refs.showDialog.show()
       }
+    },
+    created: function(){
+      this.getDate();
     }
   }
 </script>

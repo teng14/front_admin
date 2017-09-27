@@ -12,7 +12,7 @@
           <el-input type="textarea" v-model="form.serviceContent" :rows="3"></el-input>
         </el-form-item>
         <el-form-item label="回访计划：" class="item-time">
-          <el-date-picker type="date" placeholder="选择日期" v-model="form.returnVisitTime"></el-date-picker>
+          <el-date-picker type="date" placeholder="选择日期" format="yyyy-MM-dd" v-model="form.returnVisitTime"></el-date-picker>
         </el-form-item>
         <el-form-item label="回访内容:">
           <el-input type="textarea" v-model="form.returnVisitContent" :rows="3"></el-input>
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+  var moment = require('moment');// moment.js 时间格式化
   import { addRecord } from '@/api/record'
   export default {
     props: ['organizationId'],
@@ -40,7 +41,7 @@
         form: {
           serviceType: '主动客情',
           serviceContent: '',
-          returnVisitTime: new Date(),
+          returnVisitTime: '2017-09-27',
           returnVisitContent: ''
           
         },
@@ -66,10 +67,11 @@
             if(this.form.serviceType == '主动客情'){
               type = 'INITIATIVE'
             };
+            var visitTime = moment(this.form.returnVisitTime).format('YYYY-MM-DD')
             addRecord({
               organizationId: this.organizationId,
               returnVisitContent: this.form.returnVisitContent,
-              returnVisitTime: this.form.returnVisitTime,
+              returnVisitTime: visitTime,
               serviceContent: this.form.serviceContent,
               type: type,
             }).then( (response) => {

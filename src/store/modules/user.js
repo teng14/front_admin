@@ -43,14 +43,34 @@ const user = {
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo(state.token).then(response => {
-          const data = response.data
-          commit('SET_ROLES', data.role)
-          commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
-          resolve(response)
-        }).catch(error => {
-          reject(error)
+        // getInfo(state.token).then(response => {
+        //   const data = response.data
+        //   commit('SET_ROLES', data.role)
+        //   commit('SET_NAME', data.name)
+        //   commit('SET_AVATAR', data.avatar)
+        //   resolve(response)
+        // }).catch(error => {
+        //   reject(error)
+        // })
+        const data = {
+          'role': [
+            'admin'
+          ],
+          'name': 'admin',
+          'avatar': 'https://static3.ypzdw.com/shop_v1.0/images/base/logo.png?v=1.1'
+        }
+        commit('SET_ROLES', data.role)
+        commit('SET_NAME', data.name)
+        commit('SET_AVATAR', data.avatar)
+        resolve({
+          code: 0,
+          data: {
+            'role': [
+              'admin'
+            ],
+            'name': 'admin',
+            'avatar': 'https://static3.ypzdw.com/shop_v1.0/images/base/logo.png?v=1.1'
+          }
         })
       })
     },

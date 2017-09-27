@@ -1,9 +1,9 @@
 <template>
   <div class="list">
     <div class="list-title">商品列表（{{cartGoodsAllSku.length}}）</div>
-    <div class="card-goods-list">
-      <transition name="el-zoom-in-top">
-        <CartGoodsCard ref="showDialog" :goodsSkus = "cartGoodsAllSku" :organizationId= "organizationId" :areaCode="areaCode"></CartGoodsCard>
+    <div class="card-goods-list" v-loading="loading">
+      <transition name="el-zoom-in-top" v-if="cartGoodsAllSku.length > 0">
+        <CartGoodsCard ref="showDialog" :goodsSkus = "goodsType == 'all'? cartGoodsAllSku : cartGoodsYouhuiSku" :organizationId= "organizationId" :areaCode="areaCode"></CartGoodsCard>
       </transition>
     </div>
   </div>
@@ -18,9 +18,10 @@
         ecommerceId: this.$route.query.ecommerceId,
         organizationId: this.$route.query.organizationId,
         areaCode: this.$route.query.areaCode,
+        loading: true,
+        goodsType: this.$route.query.type,
         cartGoodsAllSku : [],
-        cartGoodsYouhuiSku : [],
-        goodsSkus: this.$route.query.type == 'all'? this.cartGoodsAllSku : this.cartGoodsYouhuiSku
+        cartGoodsYouhuiSku : []
       }
     },
     components:{
@@ -31,6 +32,10 @@
         cartInfo(this.ecommerceId).then( response => {
           this.cartGoodsAllSku = response.data.allSkuList
           this.cartGoodsYouhuiSku = response.data.preferentialSkuList;
+          this.loading =  false
+        },
+        error => {
+          this.loading =  false
         })
       }
     },

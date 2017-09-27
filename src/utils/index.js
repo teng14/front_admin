@@ -56,3 +56,17 @@
      return d.getMonth() + 1 + '月' + d.getDate() + '日' + d.getHours() + '时' + d.getMinutes() + '分'
    }
  }
+
+ // 格式化价格
+ export function formatPrice(number) {
+   number += ''
+   if (~(number.indexOf('.'))) {
+      var numberArr = number.split('.'),
+        arrFist = numberArr[0],
+        arrLast = numberArr[1]
+     if (arrLast.length === 1) return arrFist + '.' + arrLast + '0'
+     if (arrLast.length === 2) return number
+     if (arrLast.length > 2) return this.numberToTwo(Math.round(number * 100) / 100)
+   }
+   return number += '.00'
+}

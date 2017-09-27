@@ -44,7 +44,7 @@
           page: this.page,
           pageSize: this.pageSize
         }).then( response => {
-          this.recordData = response.data.customerContact;
+          this.recordData = response.data.customerContactList;
           this.totalPages = response.data.pageInfo.totalPages
           this.totalElements = response.data.pageInfo.totalElements
           this.loading = false

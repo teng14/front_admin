@@ -1,15 +1,15 @@
 <template>
   <div>
-    <searchbar class="search-bar"></searchbar>
+    <searchbar class="search-bar" :keywords="keywords"></searchbar>
     <div class="list">
       <div class="list-title">终端列表</div>
       <el-table
       border
       :data="listData"
       style="width: 100%"
-      empty-text="暂无内容">
+      empty-text="暂无内容" v-loading="listDataLoading">
         <el-table-column
-          prop="id"
+          prop="organizationId"
           label="终端ID" 
           width="120px"
           align="center">
@@ -18,23 +18,26 @@
           label="终端名称"
           align="center">
           <template scope="scope">
-            <router-link to="{name:'detail',params:{organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="link">{{scope.row.name}}</router-link>
+            <router-link :to="{path:'/customer/detail', query: {organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="link">{{scope.row.name}}</router-link>
           </template>
         </el-table-column>
         <el-table-column
-          prop="status"
+          prop="isActivated"
           label="账户状态"
           width="120px"
           align="center">
+          <template scope="scope">
+            {{scope.row.isActivated ? '激活' : '锁定'}}
+          </template>
         </el-table-column>
         <el-table-column
-          prop="contacts"
+          prop="contactPerson"
           label="联系人"
           width="120px"
           align="center">
         </el-table-column>
         <el-table-column
-          prop="phone"
+          prop="contactPhone"
           label="电话"
           width="200px"
           align="center">
@@ -45,10 +48,19 @@
           align="center">
           <template scope="scope">
             <el-button @click="addKeqing(scope.row.organizationId)" type="text">新增记录</el-button> &nbsp;&nbsp;
-            <router-link to="/customer/detail" class="router-link-active">查看详情</router-link>
+            <router-link :to="{path:'/customer/detail', query: {organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="router-link-active">查看详情</router-link>
           </template>
         </el-table-column>
       </el-table>
+      <div class="page">
+        <el-pagination
+          @current-change="handleCurrentChange" 
+          :current-page.sync="page"
+          :page-size="pageSize"
+          layout="prev, pager, next, jumper"
+          :total="totalElements">
+        </el-pagination>
+      </div>
     </div>
     <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
   </div>
@@ -57,26 +69,38 @@
 <script>
   import Searchbar from '@/components/main/Searchbar'
   import Addrecord from '@/components/Keqing/Addrecord'
+  import { searchCustomer } from '@/api/customer'
   export default {
     data(){
       return {
         organizationId: '',
-        listData:[
-          {
-            id: 3243,
-            status: '激活',
-            name: '德阳市区源生堂大药房',
-            contacts: '张金祥',
-            phone: '18981038656',
-          }
-        ]
+        keywords: this.$route.query.keywords,
+        page: this.$route.query.page || 1,
+        pageSize: this.$route.query.pageSize || 20,
+        listDataLoading: true,
+        totalElements: 0,
+        listData:[]
       }
     },
     methods: {
+      getSearchData: function(){
+        this.listDataLoading = true
+        searchCustomer(this.keywords, this.page, this.pageSize).then( response => {
+          this.listData = response.data.customerList
+          this.listDataLoading = false
+          this.totalElements = this.pageSize * response.data.pageInfo.totalPages
+        })
+      },
       addKeqing: function(organizationId){
         this.organizationId = organizationId
         this.$refs.showDialog.show()
+      },
+      handleCurrentChange: function(){
+        this.getSearchData();
       }
+    },
+    created: function(){
+      this.getSearchData()
     },
     components: {
       Searchbar,
@@ -112,5 +136,9 @@
         color: #20a0ff;
       }
     }
+  }
+  .page{
+    padding: 20px 0 10px;
+    text-align: right;
   }
 </style>

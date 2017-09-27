@@ -1,10 +1,23 @@
 import fetch from '@/utils/fetch'
 
-// 客户基础信息
+// 查询终端
+export function searchCustomer(keywords, page, pageSize) {
+  return fetch({
+    domain: 'cr',
+    url: '/customerDetail/search',
+    method: 'get',
+    params: {
+      keywords,
+      page,
+      pageSize
+    }
+  })
+}
 
+// 客户基础信息
 export function basicInfo(ecommerceId) {
   return fetch({
-    domain: 'base',
+    domain: 'cr',
     url: '/customerDetail/basicInfo',
     method: 'get',
     params: {
@@ -16,7 +29,8 @@ export function basicInfo(ecommerceId) {
 // 购物车
 export function cartInfo(ecommerceId) {
   return fetch({
-    domain: 'base',
+    domain: 'cr',
+    method: 'get',
     url: '/customerRecentCase/cartInfo',
     params: {
       ecommerceId
@@ -52,12 +66,3 @@ export function buyingPower(uid) {
   })
 }
 
-// 根据商品SKU，获取商品信息
-export function goodsInfo(params) {
-  return fetch({
-    domain: 'card',
-    url: '/card/get',
-    method: 'get',
-    params
-  })
-}

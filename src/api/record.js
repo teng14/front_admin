@@ -2,7 +2,7 @@ import fetch from '@/utils/fetch'
 
 export function planData(params) {
   return fetch({
-    domain: 'base',
+    domain: 'cr',
     url: '/api/customerContact/returnVisit',
     method: 'get',
     params
@@ -11,24 +11,24 @@ export function planData(params) {
 
 export function markCustomerContact(id) {
   return fetch({
-    domain: 'base',
+    domain: 'cr',
     url: '/api/customerContact/' + id,
     method: 'post'
   })
 }
 
-export function addRecord(params) {
+export function addRecord(data) {
   return fetch({
-    domain: 'base',
-    url: '/api/customerContact/',
+    domain: 'cr',
+    url: '/api/customerContact',
     method: 'post',
-    params
+    data
   })
 }
 
 export function getRecord(params) {
   return fetch({
-    domain: 'base',
+    domain: 'cr',
     url: '/api/customerContact/',
     method: 'get',
     params

@@ -66,5 +66,16 @@ export const asyncRouterMap = [
       { path: 'cartGoods', name: '购物车商品', component: _import('page/customer/cartGoods') }
     ]
   },
+  {
+    path: '/order',
+    component: Layout,
+    redirect: '/home',
+    noDropdown: true,
+    name: '订单',
+    children: [
+      { path: 'index', component: _import('page/order/index') },
+      { path: 'detail', name: '订单详情', component: _import('page/order/detail') }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]

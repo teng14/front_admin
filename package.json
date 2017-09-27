@@ -11,9 +11,11 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "@types/moment": "^2.13.0",
     "axios": "0.16.2",
     "element-ui": "1.4.3",
     "js-cookie": "2.1.4",
+    "moment": "^2.18.1",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "vue": "2.4.2",

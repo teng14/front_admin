@@ -81,7 +81,7 @@
             <p>百日采购额：<span>{{buyingData.hundred_day_pay_sum}}元</span></p>
             <p>百日采购次数：<span>{{buyingData.hundred_day_pay_count}}</span></p>
             <p v-html="filtersWeek"></p>
-            <p>用户分层： <el-tooltip effect="dark" placement="bottom">
+            <p>用户分层： <el-tooltip v-if="buyingData.buyerLayerName" effect="dark" placement="bottom">
               <div slot="content" v-html="buyingData.buyerLayerTips"></div>
               <span>{{buyingData.buyerLayerName}} <i class="el-icon-warning"></i></span></el-tooltip></p>
           </div>
@@ -106,7 +106,7 @@
         customerInfo: {
           loading: false,
           taxpaycodes: [],
-          basicInfoData:{}
+          basicInfoData: ''
         },
         cartCountInfo: {
           cartTotalCount: 0,
@@ -171,6 +171,7 @@
           var Data = response.Data;
           for(let i = 0; i < Data.length; i++){
             if (Data[i].status === 1) {
+              console.log
               this.orderCount.unpaidOrderCount = Data[i].count
             }else if (Data[i].status === 4) {
               this.orderCount.chonghongOrderCount = Data[i].count
@@ -227,7 +228,7 @@
           if(response.data.customerContact){
             this.keqing.loadingText = '暂无客情记录'
           }
-          this.keqing.recordData = response.data.customerContact;
+          this.keqing.recordData = response.data.customerContactList;
           this.keqing.totalPages = response.data.pageInfo.totalPages
           this.keqing.totalElements = response.data.pageInfo.totalElements
           this.keqing.loading = false
@@ -249,8 +250,8 @@
         let tips = '&nbsp;&nbsp;(建议联系终端)'
         let html = '高频采购周期：';
         for( let value in this.buyingData.high_frequency){
-          html+= '<span>'+ week[this.buyingData.high_frequency[value]-1] +'</span>'
-          if(this.buyingData.high_frequency[value] === now){
+          html+= '<span>'+ week[this.buyingData.high_frequency[value]] +'</span>'
+          if(this.buyingData.high_frequency[value] == now-1){
             html+= tips
           }
           html+= '、'
@@ -259,11 +260,12 @@
         return html
       },
       filtersTaxpaycodes: function(){
-        var html ='';
-        var htmlAll = '';
+        let html ='';
         for( let key in this.customerInfo.taxpaycodes){
             if(key < 3){
-              html+= this.customerInfo.taxpaycodes[key]+', '
+              if(this.customerInfo.taxpaycodes[key] != ''){
+                html+= this.customerInfo.taxpaycodes[key]+', '
+              }
             }
         }
         if(html === ''){
