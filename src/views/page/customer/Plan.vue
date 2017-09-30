@@ -54,7 +54,7 @@
         </el-pagination>
       </div>
     </div>
-    <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
+    <addrecord ref="showDialog" :organizationId = "organizationId" remark="true" :customerContact="customerContact" :organizationName = "organizationName"></addrecord>
   </div>
 </template>
 
@@ -71,7 +71,9 @@
         planData: [], 
         listLoading: true,
         organizationId: '',
+        organizationName: '',
         currentPage: 4,
+        customerContact: ''
       }
     },
     components: {
@@ -87,7 +89,6 @@
           this.planData = response.data.customerContactList
           this.totalElements = response.data.pageInfo.totalElements
           this.listLoading = false
-          console.log(this.planData)
         },
         error => {
           this.listLoading = false;
@@ -109,6 +110,8 @@
       },
       addKeqing: function(index, data){
         this.organizationId = data.organizationId
+        this.organizationName = data.organizationName
+        this.customerContact = data.id
         this.$refs.showDialog.show()
       }
     },

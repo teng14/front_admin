@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="终端：德阳市区源生堂大药房" :visible.sync="showDialog" size="tiny">
+    <el-dialog :title="organizationName" :visible.sync="showDialog" size="tiny" @close="resetForm('form')">
       <el-form :label-position="labelPosition" :rules="rules" :model="form" ref="form">
         <el-form-item label="客情服务类型：">
           <el-radio-group v-model="form.serviceType">
@@ -14,7 +14,7 @@
         <el-form-item label="回访计划：" class="item-time">
           <el-date-picker type="date" placeholder="选择日期" format="yyyy-MM-dd" v-model="form.returnVisitTime"></el-date-picker>
         </el-form-item>
-        <el-form-item label="回访内容:">
+        <el-form-item label="回访内容:" prop="returnVisitContent">
           <el-input type="textarea" v-model="form.returnVisitContent" :rows="3"></el-input>
         </el-form-item>
         <el-form-item>
@@ -28,9 +28,9 @@
 
 <script>
   var moment = require('moment');// moment.js 时间格式化
-  import { addRecord } from '@/api/record'
+  import { addRecord, markCustomerContact } from '@/api/record'
   export default {
-    props: ['organizationId'],
+    props: ['organizationId', 'organizationName', 'customerContact', 'remark'],
     data() {
       return {
         labelPosition: 'left',
@@ -41,7 +41,7 @@
         form: {
           serviceType: '主动客情',
           serviceContent: '',
-          returnVisitTime: '2017-09-27',
+          returnVisitTime: new Date(),
           returnVisitContent: ''
           
         },
@@ -56,7 +56,15 @@
     methods: {
       show: function(){
         this.showDialog = true;
-        // console.log(this.$refs.form)
+        // this.$refs['form'].resetFields();
+      },
+      mark: function(){
+        markCustomerContact(this.customerContact).then( response => {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          });
+        })
       },
       submitForm: function(formName){
         // console.log(this.$refs[formName])
@@ -79,8 +87,12 @@
                 message: '操作成功',
                 type: 'success'
               });
+              if(this.remark){
+                this.mark()
+              }
               this.showDialog = false;
               this.formloading = false;
+              window.location.reload()
             },
             error => {
               this.formloading = false;
@@ -90,12 +102,15 @@
             return false
           }
         })
+      },
+      resetForm: function(formName){
+        this.$refs.form.resetFields();
       }
     },
     created: function(){
-      
     },
     mounted: function(){
+      
       // console.log(this.$refs)
     },
     updated: function(){

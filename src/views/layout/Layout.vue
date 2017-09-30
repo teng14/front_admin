@@ -58,7 +58,7 @@ export default {
         .sidebar-wrapper {
             width: 180px;
             position: fixed;
-            top: 40px;
+            top: 0;
             bottom: 0;
             left: 0;
             z-index: 1001;

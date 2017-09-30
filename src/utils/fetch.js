@@ -1,7 +1,7 @@
 
 import axios from 'axios'
 import qs from 'qs'
-import { Message } from 'element-ui'
+import { Message, MessageBox } from 'element-ui'
 import store from '../store'
 import { getToken } from '@/utils/auth'
 import Api from '@/api/apiConfig'
@@ -24,7 +24,8 @@ service.interceptors.request.use(config => {
       ...config.data
     })
   }
-  if (config.domain === 'cr') {
+  if (config.domain === 'cr' || config.domain === 'yaoyi') {
+    config.headers['Accept'] = 'application/json'
     config.withCredentials = true // 是否允许带cookie这些
   }
   return config
@@ -34,6 +35,11 @@ service.interceptors.request.use(config => {
   Promise.reject(error)
 })
 
+// status
+// service.interceptors.validateStatus.use(status => {
+//   console.log(status)
+// })
+
 // respone拦截器
 service.interceptors.response.use(
   response => {
@@ -41,7 +47,7 @@ service.interceptors.response.use(
   * code为非20000是抛错 可结合自己业务进行修改
   */
     const res = response.data
-    if (res.code === 0 || res.Status === 'Success' || res.oper === 0) {
+    if (res.code === 0 || res.Status === 'Success' || res.oper === 0 || res.status === 1 || res.STATUS === 1) {
       return response.data
     } else {
       Message({
@@ -51,17 +57,33 @@ service.interceptors.response.use(
       })
 
       // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
+      if (parseInt(res.code) === 3) {
+        // window.location.href = Api['passport'] + '/login?returnUrl=' + Api['cr']
+        MessageBox.confirm('你的登录已过期或者已登出，请重新登录', '确定登出', {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
+          showCancelButton: false,
+          closeOnClickModal: false,
           type: 'warning'
         }).then(() => {
-          store.dispatch('FedLogOut').then(() => {
-            location.reload()// 为了重新实例化vue-router对象 避免bug
-          })
+          window.location.href = Api['passport'] + '/login?returnUrl=' + Api['cr']
+          // store.dispatch('FedLogOut').then(() => {
+          //   location.reload()// 为了重新实例化vue-router对象 避免bug
+          // })
         })
       }
+      // if (res.code === 3) {
+      //   MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
+      //     confirmButtonText: '重新登录',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     window.location.href = Api['passport'] + '?returnUrl=' + window.location.href
+      //     // store.dispatch('FedLogOut').then(() => {
+      //     //   location.reload()// 为了重新实例化vue-router对象 避免bug
+      //     // })
+      //   })
+      // }
       return Promise.reject('error')
     }
   },

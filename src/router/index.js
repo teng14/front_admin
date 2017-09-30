@@ -49,7 +49,7 @@ export const asyncRouterMap = [
   {
     path: '/home',
     component: Layout,
-    icon: 'tubiao',
+    icon: 'el-icon-my-shouye',
     noDropdown: true,
     children: [{ path: 'index', name: '首页', component: _import('home/index'), meta: { role: ['admin'] }}]
   },
@@ -58,12 +58,14 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/customer/index',
     noDropdown: true,
+    hidden: true,
     name: '终端列表',
     children: [
       { path: 'index', component: _import('page/customer/index') },
       { path: 'detail', name: '终端详情', component: _import('page/customer/detail') },
       { path: 'keqingList', name: '客情历史记录', component: _import('page/customer/keqingList') },
-      { path: 'cartGoods', name: '购物车商品', component: _import('page/customer/cartGoods') }
+      { path: 'cartGoods', name: '购物车商品', component: _import('page/customer/cartGoods') },
+      { path: 'productGoods', name: '商品列表', component: _import('page/customer/productGoods') }
     ]
   },
   {
@@ -71,6 +73,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/home',
     noDropdown: true,
+    hidden: true,
     name: '订单',
     children: [
       { path: 'index', component: _import('page/order/index') },

@@ -3,22 +3,24 @@
     :data="goodsData"
     border
     style="width: 100%"
-    class="goodsCard">
+    class="goodsCard" v-loading="goodsLoading"
+    :default-sort = "{prop: 'basic.price', order: 'ascending'}"
+    >
     <el-table-column
       label="商品信息"
-      width="380"
+      width="480"
       align="center">
       <template scope="scope">
         <div class="goods-info">
           <div class="img-box">
-            <img :src="staticImgDomain+ scope.row.basic.mainPic+'_77x77'" alt="">
+            <a :href="protocol + '//'+ scope.row.shop.shopDomain + '.ypzdw.' + domainSuffix + '/0/' +scope.row.basic.skuId" target="_blank"><img :src="staticImgDomain+ scope.row.basic.mainPic+'_77x77'" alt=""></a>
           </div>
           <div class="goods-info-bd">
-            <p class="title">{{scope.row.basic.generalName}}</p>
+            <p class="title"><a :href="protocol + '//'+ scope.row.shop.shopDomain + '.ypzdw.' + domainSuffix + '/0/' +scope.row.basic.skuId" target="_blank">{{scope.row.basic.generalName}}</a></p>
             <p class="other">规格： {{scope.row.basic.specification}} / {{scope.row.basic.unit}}</p>
             <p class="other">厂家： {{scope.row.basic.factoryName}}</p>
             <p class="other">供应商： {{scope.row.shop.sellerName}}</p>
-            <p><a href="" class="link" target="_blank">查看商品详情 &gt;</a></p>
+            <p><a class="link" :href="protocol + '//'+ scope.row.shop.shopDomain + '.ypzdw.' + domainSuffix + '/0/' +scope.row.basic.skuId" target="_blank">查看商品详情 &gt;</a></p>
           </div>
         </div>
       </template>
@@ -26,12 +28,15 @@
     <el-table-column label="当前商品供应商情况" align="center">
       <el-table-column
         label="价格"
-        width="200"
+        width="300"
+        :sortable='!sort'
+        prop="basic.price"
+        :sort-method="sortPrice"
         align="center">
         <template scope="scope">
           <div class="price-box">
-            <p class="price" v-if="scope.row.basic.price === scope.row.basic.originalPrice">￥{{formatPrice(scope.row.basic.price)}}</p>
-            <p class="price" v-else>￥{{formatPrice(scope.row.basic.price)}} <s>￥{{formatPrice(scope.row.basic.originalPrice)}}</s></p>
+            <p class="price" v-if="scope.row.activities.length>0">￥{{formatPrice(getFirstPriceData(scope.row.activities))}} <s>￥{{formatPrice(scope.row.basic.originalPrice)}}</s></p>
+            <p class="price" v-else>￥{{formatPrice(scope.row.basic.price)}}</p>
             <p class="kucun">当前库存：{{scope.row.basic.quantity - scope.row.basic.blockedQuantity < scope.row.basic.minBuyQuantity ? '库存不足' : scope.row.basic.quantity - scope.row.basic.blockedQuantity}}</p>
             <p class="tag-box"><span v-for="(item, index) in scope.row.activities" :key="index" :class="'tag tag-' + item.type">{{item.typeName}}</span> <span class="tag" v-if="scope.row.basic.isControlSales">控销</span></p>
             <p class="tag-box" v-if="scope.row.basic.expiryDate"><span class="tag tag-expiry">近效期</span> <em>将于{{parseTime(scope.row.basic.expiryDate, '{y}-{m}-{d}')}}到期</em></p>
@@ -39,8 +44,13 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="当前购物车数量"
-        align="center">
+        label="当前购物车情况"
+        align="center" v-if="!noShow">
+        <template scope="scope">
+          <p class="cart-info">购物车已有数量：<span class="red">{{scope.row.purchaseTips.cartCount}}</span></p>
+          <p class="cart-info" v-if="scope.row.purchaseTips.hasPurchaseHistory">最近采购：<span class="red">{{scope.row.purchaseTips.purchaseHistoryDay}}天</span></p>
+          <p class="cart-info" v-if="scope.row.purchaseTips.hasPurchaseHistory">在该商业共采购：<span class="red">{{scope.row.purchaseTips.purchaseHistoryCount}}</span></p>
+        </template>
       </el-table-column>
       <el-table-column
         label="服务保障"
@@ -52,13 +62,15 @@
     </el-table-column>
     <el-table-column
       label="其他供应商"
-      align="center">
+      align="center" v-if="!noShow">
       <template scope="scope">
-        <a href="" class="link">查看详情</a>
+        <router-link :to="{path: '/customer/productGoods', query: {productId: scope.row.basic.productId, areaCode: areaCode, organizationId: organizationId, skuId: scope.row.basic.skuId}}" class="link">查看详情</router-link>
       </template>
     </el-table-column>
     <el-table-column
-      label="活动">
+      label="活动"
+      width="200"
+      align="center">
       <template scope="scope">
         <p v-for="(item, index) in scope.row.activities" :key="index">
           {{item.typeName}}: <span class="red">￥{{formatPrice(item.price)}}</span> <s>￥{{formatPrice(scope.row.basic.originalPrice)}}</s>
@@ -73,28 +85,48 @@
   import Api from '@/api/apiConfig'
   import { parseTime, formatPrice } from '@/utils/index'
   export default {
-    props: ['organizationId', 'areaCode', 'goodsSkus'],
+    props: ['organizationId', 'areaCode', 'goodsSkus', 'noShow','sort'],
     data(){
       return {
+        protocol: Api['protocol'],
+        domainSuffix: Api['domainSuffix'],
         staticImgDomain: Api['picDomain'],
+        goodsLoading: true,
         goodsData: []
       }
     },
     methods: {
       getCartGoodsInfo: function(){
+        this.goodsLoading = true
         let strGoodsSkus = this.goodsSkus
         if(typeof this.goodsSkus == 'object'){
           strGoodsSkus = this.goodsSkus.join(',')
         }
         goodsCard({
           id: 'item',
-          organizationId: this.organizationId,
-          areaCode: this.areaCode,
+          card_organizationId: this.organizationId,
+          card_areaCode: this.areaCode,
           card_skuIds: strGoodsSkus
         }).then( response => {
           this.goodsData = response.data
-          console.log(this.goodsData)
+          this.goodsLoading = false
         })
+      },
+      getFirstPriceData: function(obj){
+        var value;
+        for( var index in obj){
+          value = obj[index].price
+        }
+        return value
+      },
+      sortPrice: function(a,b){
+        let aPrice = a.activities.price || a.basic.price
+        let bPrice = b.activities.price || b.basic.price
+        if(aPrice - bPrice >=0){
+          return true
+        }else{
+          return false
+        }
       },
       parseTime,
       formatPrice
@@ -145,6 +177,9 @@
       .red{
         color: #ff3333;
         font-weight: bold;
+      }
+      &.cart-info{
+        font-size: 14px;
       }
     }
     .tag{

@@ -1,34 +1,28 @@
 <template>
-  <header>  
-    <h1>  
-      <router-link to="/">  
-        <img :src="logoImg" alt="logo">  
-      </router-link>  
-    </h1>
+  <header>
     <div class="userContainer">
-      <span v-text="name">刘强（18081009090）</span> | <a href="javascript:;" @click="logout">退出</a>
+      <span v-text="name+ ' ('+ phone +')'"></span> | <a href="javascript:;" @click="logout">退出</a>
     </div>  
   </header>
 </template>
 
 <script>
-  import logoImg from '@/images/base/logo.png' 
   import { mapGetters  } from 'vuex'
   export default {  
     data() {  
       return { 
-        logoImg
       }  
     },
     computed: {
       ...mapGetters([
-        'name'
+        'name',
+        'phone'
       ])
     },
     methods: {
       logout(){
         this.$store.dispatch('LogOut').then(() => {
-          location.reload();
+          // window.location.href = 'http://passport.ypzdw.cn/login?returnUrl=http://cr.ypzdw.cn'
         })
       }
     }  
@@ -42,7 +36,7 @@
     left: 0;
     right: 0;
     height: 40px;
-    background: #324157;
+    background: #28282e;
     z-index: 9;
     h1{
       float: left;

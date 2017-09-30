@@ -9,7 +9,7 @@
       style="width: 100%"
       empty-text="暂无内容" v-loading="listDataLoading">
         <el-table-column
-          prop="organizationId"
+          prop="ecommerceId"
           label="终端ID" 
           width="120px"
           align="center">
@@ -47,7 +47,7 @@
           width="200px"
           align="center">
           <template scope="scope">
-            <el-button @click="addKeqing(scope.row.organizationId)" type="text">新增记录</el-button> &nbsp;&nbsp;
+            <el-button @click="addKeqing(scope.row.organizationId, scope.row.name)" type="text">新增记录</el-button> &nbsp;&nbsp;
             <router-link :to="{path:'/customer/detail', query: {organizationId: scope.row.organizationId, ecommerceId: scope.row.ecommerceId}}" class="router-link-active">查看详情</router-link>
           </template>
         </el-table-column>
@@ -62,7 +62,7 @@
         </el-pagination>
       </div>
     </div>
-    <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
+    <addrecord ref="showDialog" :organizationId = "organizationId" :organizationName = "organizationName"></addrecord>
   </div>
 </template>
 
@@ -74,7 +74,8 @@
     data(){
       return {
         organizationId: '',
-        keywords: this.$route.query.keywords,
+        organizationName: '',
+        keywords: this.$route.query.keywords || '',
         page: this.$route.query.page || 1,
         pageSize: this.$route.query.pageSize || 20,
         listDataLoading: true,
@@ -89,10 +90,14 @@
           this.listData = response.data.customerList
           this.listDataLoading = false
           this.totalElements = this.pageSize * response.data.pageInfo.totalPages
+        },
+        error => {
+          this.listDataLoading = false
         })
       },
-      addKeqing: function(organizationId){
+      addKeqing: function(organizationId, organizationName){
         this.organizationId = organizationId
+        this.organizationName = organizationName
         this.$refs.showDialog.show()
       },
       handleCurrentChange: function(){

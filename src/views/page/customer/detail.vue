@@ -11,10 +11,10 @@
           <div class="text item">
             <p>终端名：<span>{{customerInfo.basicInfoData.name}}</span></p>
             <p>账号状态：<span>{{customerInfo.basicInfoData.isActivated == true ? '激活' : '锁定'}}</span></p>
-            <p>联系人：<span>{{customerInfo.basicInfoData.contactPerson}}(电话：{{customerInfo.basicInfoData.contactPhone}} &nbsp;&nbsp;&nbsp;&nbsp; QQ：{{customerInfo.basicInfoData.contactQQ}})</span></p>
-            <p>资质份数：<span style="color:#ff3333;" v-if="customerInfo.basicInfoData.aptitudeNum >3">{{customerInfo.basicInfoData.aptitudeNum}}</span><span style="color:#ff3333;" v-else>{{customerInfo.basicInfoData.aptitudeNum}}，请联系终端补足资质。</span></p>
+            <p>联系人：<span>{{customerInfo.basicInfoData.contactPerson}} (电话：{{customerInfo.basicInfoData.contactPhone}} &nbsp;&nbsp;&nbsp;&nbsp; QQ：{{customerInfo.basicInfoData.contactQQ ? customerInfo.basicInfoData.contactQQ : '无'}})</span></p>
+            <p>资质份数：<span style="color:#324057;" v-if="customerInfo.basicInfoData.aptitudeNum >3">{{customerInfo.basicInfoData.aptitudeNum}}</span><span style="color:#ff3333;" v-else>{{customerInfo.basicInfoData.aptitudeNum}}，请联系终端补足资质。</span></p>
             <p v-if="customerInfo.taxpaycodes.length <= 3">税号：<span style="color:#ff3333;" v-html="filtersTaxpaycodes"></span></p>
-            <p v-else>税号：<span style="color:#ff3333;" v-html="filtersTaxpaycodes"></span>
+            <p v-else>税号：<span style="color:#324057;" v-html="filtersTaxpaycodes"></span>
               <el-popover
                 ref="popover1"
                 placement="top-start"
@@ -33,13 +33,13 @@
           <div slot="header" class="clearfix">
             <span style="line-height: 36px;">最近一次客情记录</span>
             <router-link to="/customer/keqingList" style="float:right;line-height:37px;font-size: 14px;color: #1d90e6;">所有记录</router-link>
-            <a style="float: right; margin-right: 10px; font-size: 14px; line-height:37px;color: #1d90e6;" @click="addKeqing(ecommerceId)" href="javascript:;">新增客情记录</a>
+            <a style="float: right; margin-right: 10px; font-size: 14px; line-height:37px;color: #1d90e6;" @click="addKeqing(ecommerceId, organizationName)" href="javascript:;">新增客情记录</a>
           </div>
           <div v-if="keqing.recordData.length > 0" v-loading="keqing.loading">
             <div class="text item" v-for="(item,index) in keqing.recordData" :key="index">
               <p><i class="el-icon-time"></i> {{item.created}} <span>({{item.type == 'INITIATIVE' ? '主动客情' : '客户来电'}})</span><strong style="float:right;font-weight: normal;">维护人：<span>{{item.operatorName}}</span></strong></p>
               <p style="margin-top: 20px;margin-bottom: 5px;">服务内容：</p>
-              <p style="margin-top: 0;"><span style="line-height: 22px;">{{item.returnVisitContent}}</span></p>
+              <p style="margin-top: 0;"><span style="line-height: 22px;">{{item.serviceContent}}</span></p>
             </div>
             <div class="page">
               <el-pagination
@@ -65,9 +65,11 @@
           </div>
           <div class="text item">
             <p><i class="el-icon-my-gouwuche" style="color:#1d90e6;"></i> 购物车：</p>
-            <p><span>当前购物车含有商品<router-link :to="{path: '/customer/cartGoods', query:{ ecommerceId: ecommerceId, organizationId: organizationId, areaCode: areaCode, type: 'all' }}">{{cartCountInfo.cartTotalCount}}</router-link>个，共<router-link :to="{path: '/customer/cartGoods', query:{ ecommerceId: ecommerceId, organizationId: organizationId, areaCode: areaCode, type: 'youhui' }}">{{cartCountInfo.cartYouhuiCount}}</router-link>个商品正在搞活动。</span></p>
+            <p><span>当前购物车含有商品 <router-link v-if="cartCountInfo.cartTotalCount !=0" :to="{path: '/customer/cartGoods', query:{ ecommerceId: ecommerceId, organizationId: organizationId, areaCode: areaCode, type: 'all' }}">{{cartCountInfo.cartTotalCount}}</router-link> <em v-else> {{cartCountInfo.cartTotalCount}} </em> 个</span>
+            <!-- ，共<router-link :to="{path: '/customer/cartGoods', query:{ ecommerceId: ecommerceId, organizationId: organizationId, areaCode: areaCode, type: 'youhui' }}">{{cartCountInfo.cartYouhuiCount}}</router-link>个商品正在搞活动。 -->
+            </p>
             <p style="margin-top: 20px;"><i class="el-icon-my-wodedingdan" style="color:#1d90e6;"></i> 订单：</p>
-            <p><span><em>{{orderCount.unpaidOrderCount}}</em>个未支付，<em>{{orderCount.chonghongOrderCount}}</em>个冲红，<em>{{orderCount.outBoundOrderCount}}</em>个未收货。</span></p>
+            <p><span><em style="color:#324057">{{orderCount.unpaidOrderCount}}</em> 个未支付，<em style="color:#324057">{{orderCount.chonghongOrderCount}}</em> 个冲红，<em style="color:#324057">{{orderCount.outBoundOrderCount}}</em> 个未收货。</span></p>
             <!-- <p><span><i class="el-icon-time"></i> 最近采购2017-07-27（星期五） 15:48:59</span></p> -->
           </div>
         </el-card>
@@ -88,7 +90,7 @@
         </el-card>
       </el-col>
     </el-row>
-    <addrecord ref="showDialog" :organizationId = "organizationId"></addrecord>
+    <addrecord ref="showDialog" :organizationId = "organizationId" :organizationName = "organizationName"></addrecord>
   </div>
 </template>
 
@@ -102,6 +104,7 @@
       return {
         ecommerceId: this.$route.query.ecommerceId,
         organizationId: this.$route.query.organizationId,
+        organizationName: '',
         areaCode: 0,
         customerInfo: {
           loading: false,
@@ -148,8 +151,10 @@
         basicInfo(this.ecommerceId).then( response => {
           this.customerInfo.basicInfoData = response.data
           this.customerInfo.taxpaycodes = response.data.taxpaycodes
+          this.organizationName = response.data.name
           this.customerInfo.loading = false
           this.areaCode = response.data.areaCode
+          this.changeRoute(this.organizationName)
         },
         error => {
           this.customerInfo.loading = false
@@ -189,7 +194,7 @@
           if(response.data.length > 0){
             this.buyingData.hundred_day_pay_sum = response.data[0].hundred_day_pay_sum
             this.buyingData.hundred_day_pay_count = response.data[0].hundred_day_pay_count
-            let high_frequency = response.data[0].high_frequency.split(',')
+            let high_frequency = (response.data[0].high_frequency && response.data[0].high_frequency.split(',')) || ''
             this.buyingData.high_frequency = high_frequency
             this.buyingData.buyer_layer = response.data[0].buyer_layer
             if(this.buyingData.buyer_layer == 1){
@@ -214,8 +219,9 @@
       },
 
       //增加客情
-      addKeqing: function(organizationId){
+      addKeqing: function(organizationId, organizationName){
         this.organizationId = organizationId
+        this.organizationName = organizationName
         this.$refs.showDialog.show()
       },
       //客情记录
@@ -225,7 +231,7 @@
           page: this.keqing.page,
           pageSize: this.keqing.pageSize
         }).then( response => {
-          if(response.data.customerContact){
+          if(response.data.customerContactList){
             this.keqing.loadingText = '暂无客情记录'
           }
           this.keqing.recordData = response.data.customerContactList;
@@ -241,6 +247,9 @@
       //客情翻页
       handleCurrentChange: function(){
         this.getKeqingData();
+      },
+      changeRoute: function(name,path){
+        // this.$route.name = name
       }
     },
     computed: {

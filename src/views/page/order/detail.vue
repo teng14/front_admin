@@ -140,6 +140,106 @@
           </template>
         </el-table-column>
       </el-table>
+      <div v-if="orderData.notoutproducts != ''" style="margin-top: 10px;">
+        <div slot="header" class="clearfix">
+          <span style="font-size: 14px; color: #FF4949">未出库</span>
+        </div>
+        <el-table
+          :data="orderData.notoutproducts"
+          style="width: 100%">
+          <el-table-column
+            label="商品名称">
+            <template scope="scope">
+              {{scope.row.proname}} <i class="tag" v-for="proms in scope.row.promos" :key="proms.typename" v-if="proms.promotype != 0">{{proms.typename}}</i>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="factory"
+            label="生产厂家">
+          </el-table-column>
+          <el-table-column
+            prop="specification"
+            label="规格"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="utils"
+            label="单位"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            label="单价"
+            prop="price"
+            width="180">
+            <template scope="scope">
+              <span class="red">￥{{formatPrice(scope.row.payprice)}} </span>&nbsp;&nbsp;<s class="gray" v-html="scope.row.payprice === scope.row.price ? '' : '￥'+formatPrice(scope.row.price)"></s>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="num"
+            label="数量"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            label="小计"
+            width="200">
+            <template scope="scope">
+              ￥{{formatPrice(scope.row.payprice*scope.row.num)}}
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-card>
+    <el-card class="box-card-goods" v-if="orderData.redproducts != ''">
+      <div slot="header" class="clearfix">
+        <span>冲红信息</span>
+      </div>
+      <el-table
+        :data="orderData.redproducts"
+        style="width: 100%">
+        <el-table-column
+          label="商品名称">
+          <template scope="scope">
+            {{scope.row.proname}} <i class="tag" v-for="proms in scope.row.promos" :key="proms.typename" v-if="proms.promotype != 0">{{proms.typename}}</i>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="factory"
+          label="生产厂家">
+        </el-table-column>
+        <el-table-column
+          prop="specification"
+          label="规格"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="utils"
+          label="单位"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          label="单价"
+          prop="price"
+          width="180">
+          <template scope="scope">
+            <span class="red">￥{{formatPrice(scope.row.payprice)}} </span>&nbsp;&nbsp;<s class="gray" v-html="scope.row.payprice === scope.row.price ? '' : '￥'+formatPrice(scope.row.price)"></s>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="num"
+          label="数量"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="小计"
+          width="200">
+          <template scope="scope">
+            ￥{{formatPrice(scope.row.payprice*scope.row.num)}}
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <div class="other-info">
       <el-row :gutter="20">

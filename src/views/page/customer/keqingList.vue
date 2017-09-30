@@ -8,7 +8,7 @@
         </div>
         <div class="item">
           <p><span>服务内容：</span></p>
-          <p class="fr">{{item.returnVisitContent}}</p>
+          <p class="fr">{{item.serviceContent}}</p>
         </div>
       </el-card>
     </div>
